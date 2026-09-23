@@ -11,7 +11,7 @@ This is the core idea of how I imagine this will work: the dataset has each part
 
 This is what I imagine one data sample to be:
 EMG data of the same person speaking the same phenome/word => model is supposed to answer YES
-EMG data of the same person speaking a different phenome/word => model is supposed to answer NO
+EMG data of a different person speaking the same phenome/word => model is supposed to answer NO
 
 It is important that the two samples the model is being asked to say YES/NO is of the two (or the same individual) saying the same class. If those were different, then the model could confound the word/phoneme being different with the person being different. Does this make sense? Tell me if there is a better way.
 
