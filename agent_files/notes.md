@@ -18,11 +18,6 @@ These are notes from a human trying to understand this pipeline for the purposes
 - SPD-RNN: One trial is represented as a sequence of 46 covariance matrices, and the model predicts which word/phenome it was.
 - SPD-RNN is able to look at the phenome/word over time (such as which muscles move first before others). SPDNet squashes all that into one covariance matrix, which represents which muscles are involved. Two words can use the same muslces but in different order. SPD-RNN addresses that.
 
-- Understand:
-  - How data is transformed to SPD
-  - How to generate pairs.
-  - How the model training works.
-
 ## Training Data
 
 - Decided on pair generation scheme.
@@ -37,3 +32,10 @@ These are notes from a human trying to understand this pipeline for the purposes
 - The model would be an SPDNet / SPDRNN but with an embedding layer at the end instead of a YES/NO decision.
 - The model is optimized on triplet loss using these embeddings.
 - Decisions are made afterward by a threshold rather than by a model.
+- Lets do SPDNet for now.
+
+- Understand:
+  - How data is transformed to SPD
+  - How to generate pairs.
+  - How triplet loss works
+  - How to change the SPDNet model to fit for
