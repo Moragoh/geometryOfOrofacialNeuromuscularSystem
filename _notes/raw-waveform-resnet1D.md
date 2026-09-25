@@ -37,8 +37,6 @@ Everything else stays the same as the SPD experiments: Subject 1, voiced/unvoice
 
 # High level plan
 
-## Steps 
-
 ## Normalization
 
 - Original paper: applies (x-mean)/std per channel, per trial. This means that every data sample reflects how much it differs from the mean of itself. It preserves the difference, but the raw amplitude information is thrown away. So there is no scale difference between different trials. There is only "how much this sample is different from its own average" per sample. So across subjects there is: "How much this person moves a muscle more in this sample relative to themselves", but not "How much more this person moves their muscle compared to another person."
@@ -64,3 +62,8 @@ Recap:
 
 What we ended up doing:
 zscoring same as pipleine.
+
+## resnet1d overview
+
+It has three residual blocks stacked together.
+Each residual block is conv1d layers + batchnorm + the shortcut that adds the original input (because this is resnet and adding this is what prevents vanishing gradients). So the shortcut is added once per block before its output.
