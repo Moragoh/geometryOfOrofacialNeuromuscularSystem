@@ -1,9 +1,13 @@
 """Load one Experiment 1 recording, z-score it, and split it the way the original notebooks do."""
 
 
+import os
+
 import numpy as np
 
 
+# recreate-with-waveforms/Experiment1, found from this file's location so it works from any working directory.
+experimentFolder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Experiment1")
 trialsPerClass = 10
 trainRepetitions = [0, 1, 2, 5, 6, 7]
 testRepetitions = [3, 4, 8, 9]
@@ -15,7 +19,7 @@ def loadZscoredTrainTestSplit(taskFolder, articulationManner, subjectNumber = 1)
     Returns trainTrials (classes * 6, 22, 7500), trainLabels, testTrials (classes * 4, 22, 7500), testLabels,
     ordered class by class like trainFeatures / testFeatures in allPhonemesSPDNet.ipynb.
     """
-    trials = np.load("../Experiment1/" + taskFolder + "/" + articulationManner + "Subject" + str(subjectNumber) + ".npy")
+    trials = np.load(os.path.join(experimentFolder, taskFolder, articulationManner + "Subject" + str(subjectNumber) + ".npy"))
 
     ### ZSCORE START 
     # Same z-scoring as allPhonemesSPDNet.ipynb / wordsSPDNet.ipynb: per trial and channel, over time, with + 1e-5.

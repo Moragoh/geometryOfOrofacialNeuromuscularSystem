@@ -25,7 +25,7 @@ class residualBlock(nn.Module):
         # The paper adds x directly. When the channel count changes that is impossible, and the paper doesn't say
         # what to do, so a 1x1 convolution projects x to outChannels (the projection shortcut of He et al. 2016).
         if inChannels != outChannels:
-            self.shortcut = nn.Conv1d(inChannels, outChannels, kernel_size = 1) # If identity can't be used, used a learned shortcut to size of outChanels
+            self.shortcut = nn.Conv1d(inChannels, outChannels, kernel_size = 1) 
         else:
             self.shortcut = nn.Identity()
         self.relu = nn.ReLU()

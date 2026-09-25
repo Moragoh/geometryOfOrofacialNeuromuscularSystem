@@ -1,3 +1,5 @@
+Note: We finished the entire implementation and verification (from step 1 to step 3) in about 3 hours. Not bad.
+
 # ResNet1D on raw EMG waveforms: high level plan
 
 Parameters follow Wang et al. 2017, "Time series classification from scratch with deep neural networks" (arXiv 1611.06455). The paper does not state epochs, batch size, or the learning-rate schedule; those come from the authors' released `ResNet.py` (github.com/cauchyturing/UCR_Time_Series_Classification_Deep_Learning_Baseline).
@@ -10,11 +12,14 @@ recreate-with-waveforms/
 └── resnet1d/
     ├── loadData.py       # load, z-score, split
     ├── resnet1d.py       # model
-    ├── train.ipynb       # 4 configs × numberSeeds → results.json + progress.log
-    └── results.py        # table vs the paper's SPD numbers
+    ├── results.py        # table vs the paper's SPD numbers
+    └── training_runs/
+        └── subject_01/
+            ├── train.ipynb   # one train → graph section per config, then overall statistics
+            └── results/      # results.json, progress.log, one saved model per run
 ```
 
-`train.ipynb` runs from inside `resnet1d/` and reads data from `../Experiment1/`.
+`train.ipynb` runs from inside `training_runs/subject_01/`. `loadData.py` finds the data (`recreate-with-waveforms/Experiment1/`) relative to its own location, so it works from any directory.
 
 ## Step 1: Data (`loadData.py`) (VERIFED)
 
@@ -38,12 +43,13 @@ recreate-with-waveforms/
 | --------------- | -------------------------------------------------------------------------------------- | ------ |
 | Optimizer       | Adam, lr 0.001, β₁ 0.9, β₂ 0.999, ε 1e-8                                               | paper  |
 | Loss            | cross-entropy                                                                          | paper  |
-| Epochs          | 500 for now (code uses 1500); final count decided from the train/test curves          | ours   |
+| Epochs          | 300 for time (code uses 1500); final count decided from the train/test curves          | ours   |
 | Batch size      | 32, same as the SPD notebooks (code uses `min(N_train / 10, 16)` → 16)                 | ours   |
 | LR schedule     | halve the learning rate when training loss hasn't improved for 50 epochs, minimum 1e-4 | code   |
 | Reported result | test accuracy at the epoch with the lowest training loss                               | paper  |
 
-- Config cell near the top: `numberSeeds = 1` to start, `10` for the full run; `numberEpochs = 500`.
+- Config cell near the top: `numberSeeds = 5`, `numberEpochs = 300`.
+- Each run saves the model from its highest-test-accuracy epoch (the repo's rule) to `results/<config>_seed<N>_bestTestAccuracy.pt`.
 - Log three test accuracies per run:
   - Wang's rule: at the epoch with the lowest training loss (never looks at test).
   - The SPD repo's rule: best test accuracy across epochs (selects on test, optimistic).
@@ -57,4 +63,4 @@ A table per config: ResNet1D (mean ± std over seeds, all three numbers) vs the 
 ## Deviations from "unchanged"
 
 - **Normalization:** Wang et al. normalize with training-set statistics. We use per-trial, per-channel z-scoring instead, to match the SPD pipeline, so the only difference from SPDNet/SPD-RNN is the representation and architecture. Train-set normalization is deferred.
-- **Run time is an estimate:** about 3.8 billion multiply-adds per trial on the forward pass; roughly 0.5–1 s per epoch on the RTX 3090, so 4–8 min per run at 500 epochs (about 3–6 h for 4 configs × 10 seeds; 3× that at 1500). Not measured.
+- **Run time (measured):** 0.6 s per epoch on the RTX 3090 at batch 32 (train + test evaluation), so about 3 min per run at 300 epochs: about 1 h for 4 configs × 5 seeds (5× that at 1500).
