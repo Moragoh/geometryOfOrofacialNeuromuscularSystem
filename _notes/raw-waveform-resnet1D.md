@@ -24,7 +24,7 @@ We use the standard ResNet for time-series classification from Wang et al. 2017 
 
 ## Architecture
 
-- **Input:** `(22 channels, 7500 samples)` per trial. No per-trial z-scoring (that was part of the SPD machinery). Instead, each channel is normalized with a single mean/std computed over the training set and applied to every trial, train and test. This only fixes differences in electrode gain and overall scale so the network trains reliably, and keeps how loud each channel was in each trial.
+- **Input:** `(22 channels, 7500 samples)` per trial, z-scored per trial and per channel over time, the same as the SPD notebooks. This keeps normalization identical across models, so any accuracy difference comes from the architecture alone. (Train-set channel normalization, which would keep amplitude information, is deferred.)
 - **3 residual blocks.** Each block:
   - Conv1D (kernel 8) → BatchNorm → ReLU
   - Conv1D (kernel 5) → BatchNorm → ReLU
@@ -34,3 +34,33 @@ We use the standard ResNet for time-series classification from Wang et al. 2017 
 - **Global average pooling** over time → **Linear** layer to the number of classes (38 phonemes or 36 words)
 
 Everything else stays the same as the SPD experiments: Subject 1, voiced/unvoiced, all phonemes/all words, and the same train/test split (trials 0–2 and 5–7 train, trials 3–4 and 8–9 test).
+
+# High level plan
+
+## Steps 
+
+## Normalization
+
+- Original paper: applies (x-mean)/std per channel, per trial. This means that every data sample reflects how much it differs from the mean of itself. It preserves the difference, but the raw amplitude information is thrown away. So there is no scale difference between different trials. There is only "how much this sample is different from its own average" per sample. So across subjects there is: "How much this person moves a muscle more in this sample relative to themselves", but not "How much more this person moves their muscle compared to another person."
+
+This method of zscoring allows the SPD matrices to becomne a correlation matrix, which only looks at: "How did these channels coordinate." If we do not do it, we just get a covariance matrix. A large covariance cannot answer between: "low amplitudes but highly coupled" vs "high amplitudes, loosly coupled"
+cov(a, b) = corr(a, b) × std_a × std_b
+But z scored per trial, std_a = std_b = 1
+
+(What is thrown away): Relative amplitude diffs between trials, '' between channels.
+(What is kept): Within a trial, how much a channel covaried with one another.
+
+- What normalization we will use
+  What information I don't want to throw away: between words and phonemes, maybe some words just recruit stronger responses. After all, harsher sounds use more recruitment of the muscles, and that is a valid piece of information that can be used to differentiate between sounds. So maybe we zscore per trial, but not per channel. This allows for magnitude differences between channels to be preserved while normalizing and gettig rid of per trial differences.
+
+So we could be calculating mean and std: per channel, across all training trials.
+This allows us to normalize and keep things at the same scale, while also getting rid of electrode gain differences: Since normalization is done per channel, no amplitude difference between channels survive1.
+
+However, we calcualte mean/std across trials, which means that differences between trials remain. This means that how much a channel activates compared to another class survivies. The downside is that relative channel differences between repetitions survive
+
+Recap:
+(What gets thrown away): Relative amplitude differences between channels in one trial.
+(What is kept): Relative amplitude differences between classes AND relative amplitude diffs between repetions of same classes.
+
+What we ended up doing:
+zscoring same as pipleine.
