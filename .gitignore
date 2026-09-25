@@ -3,3 +3,6 @@ Experiment2/
 SpeechExperiment1.zip
 SpeechExperiment2.zip
 venv/
+
+# Trained model weights (e.g. recreate-with-waveforms/resnet1d/training_runs/*/results/*.pt)
+*.pt

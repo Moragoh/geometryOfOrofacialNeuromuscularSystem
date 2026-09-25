@@ -14,9 +14,10 @@ recreate-with-waveforms/
     ├── resnet1d.py       # model
     ├── results.py        # table vs the paper's SPD numbers
     └── training_runs/
-        └── subject_01/
-            ├── train.ipynb   # one train → graph section per config, then overall statistics
-            └── results/      # results.json, progress.log, one saved model per run
+        ├── subject_01/
+        │   ├── train.ipynb   # one train → graph section per config, then overall statistics
+        │   └── results/      # results.json, progress.log, one saved model per run
+        └── subject_02/       # same layout; train.ipynb sets subjectNumber = 2
 ```
 
 `train.ipynb` runs from inside `training_runs/subject_01/`. `loadData.py` finds the data (`recreate-with-waveforms/Experiment1/`) relative to its own location, so it works from any directory.
