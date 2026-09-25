@@ -88,7 +88,7 @@ The main goal is this: is it better to use SPD matrices as training data, or raw
 In order to isolate any performance difference to what form of data was used, some parameters must be fixed.
 - Same participant/manner/task type model and the appropriate data
 - Same train/test split (same repeition numbs used as train/test)
-- Same z scoring methods (so all preprocessing before SPD must be the same)
+- Raw model: no per-trial z-scoring; each channel is normalized with a mean/std computed once over the training set
 
 ## Open Questions
 - Obviouly the model architecture will be different. What architecture would be the best?
