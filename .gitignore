@@ -6,3 +6,7 @@ venv/
 
 # Trained model weights (e.g. recreate-with-waveforms/resnet1d/training_runs/*/results/*.pt)
 *.pt
+
+# Python bytecode and nbconvert run logs
+__pycache__/
+nbconvert.log
